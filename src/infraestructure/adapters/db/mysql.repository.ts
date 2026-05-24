@@ -1,0 +1,15 @@
+import { IMysqlAppointmentRepository } from 'src/domain/repositories/mysql-appointment.repository';
+
+export class MysqlAppointmentRepository implements IMysqlAppointmentRepository {
+  async saveInMysqlDb(data: {
+    appointmentId: string;
+    insuredId: string;
+    scheduleId: number;
+    countryISO: string;
+  }): Promise<void> {
+    console.log(
+      `Appointment saves ('${data.appointmentId}', '${data.insuredId}', ${data.scheduleId})`,
+    );
+    return Promise.resolve();
+  }
+}
