@@ -11,13 +11,13 @@ Aplicación backend para el agendamiento de citas médicas de asegurados que res
 ### Prerrequisitos
  
 - Node.js >= 20.x
+- NestJS
 - AWS CLI 
-- Serverless Framework v3 
 ### 1. Clonar e instalar dependencias
  
 ```bash
-git clone https://github.com/tu-org/medical-appointment-backend.git
-cd medical-appointment-backend
+git clone https://github.com/YaLi26/Appointment-Medical-AWS.git
+cd appointment-medical-aws
 npm install
 ```
  
