@@ -3,7 +3,7 @@
 Aplicación backend para el agendamiento de citas médicas de asegurados que residen en Perú como en Colombia.
 
 ## Diseño de Arquitecura Cloud
-<img width="931" height="440" alt="image" src="https://github.com/user-attachments/assets/2f0e58f0-591b-4315-bc32-2b8b89f1f39d" />
+<img width="1209" height="718" alt="image" src="https://github.com/user-attachments/assets/916084a2-7a17-4fe9-b899-5609de18fb93" />
 
  
 ## Instalación y Despliegue
