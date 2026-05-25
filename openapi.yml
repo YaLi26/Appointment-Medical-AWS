@@ -1,0 +1,287 @@
+openapi: 3.0.0
+info:
+  title: Api Appointment Medical 
+  description: |
+    Api Appointment Medical in AWS <br>
+  contact:
+    name: Yasmin Dominguez
+    email: ydominguez-ext@pichincha.pe
+  version: 1.2.4
+servers:
+  - url: http://localhost:3000/api
+security:
+  - ApiKeyAuth: []
+tags:
+  - name: Appointments
+    description: Controlador para la gestión y agendamiento de citas médicas.
+paths:
+  /appointments:
+    post:
+      tags:
+        - Appointments
+      summary: Registra una nueva petición de agendamiento de cita
+      operationId: createAppointment
+      parameters:
+        - name: Authorization
+          in: header
+          description: JWT Authorization Token.
+          required: true
+          schema:
+            type: string
+            example: ZDk5b0FscGdHdVBLR0Y1eG5pRDlqQzgwbzlMWHIyUTpzNUJMTDAwTW1Cck
+        - name: request-date
+          in: header
+          description: Request Date | RFC 3339 Format
+          required: true
+          schema:
+            type: string
+          example: 2026-05-24T07:20:50.52Z
+        - name: request-id
+          in: header
+          description: Request Identifier
+          required: true
+          schema:
+            type: string
+            example: id of request
+        - name: x-device
+          in: header
+          description: Identifier of the device.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: 9939aadd00ee32
+        - name: x-device-ip
+          in: header
+          description: IP address of origin of the request.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: 200.10.89.34
+        - name: x-language
+          in: header
+          description: ISO – 639-1  – Language Code - 2 digit code.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            maxLength: 5
+            type: string
+            example: es
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAppointmentDto'
+      responses:
+        '202':
+          description: Apppointment Medical in progress.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "El agendamiento está en proceso."
+                  appointmentId:
+                    type: string
+                    example: "abc12345-6789-90ab-cdef-1234567890ab"
+        '401':
+          description: You're not authorized to perform this operation.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: You don't have the right permissions to execute this operation.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: An error has occurred.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '502':
+          description: The service is not available.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /appointments/{insuredId}:
+    get:
+      tags:
+        - Appointments
+      summary: Obtiene el listado de peticiones por código de asegurado
+      operationId: listAppointments
+      parameters:
+        - name: insuredId
+          in: path
+          required: true
+          description: Código del asegurado (5 dígitos, puede incluir ceros a la izquierda)
+          schema:
+            type: string
+            pattern: '^[0-9]{5}$'
+            example: "00123"
+        - name: Authorization
+          in: header
+          description: JWT Authorization Token.
+          required: true
+          schema:
+            type: string
+            example: ZDk5b0FscGdHdVBLR0Y1eG5pRDlqQzgwbzlMWHIyUTpzNUJMTDAwTW1Cck
+        - name: request-date
+          in: header
+          description: Request Date | RFC 3339 Format
+          required: true
+          schema:
+            type: string
+          example: 2026-05-24T07:20:50.52Z
+        - name: request-id
+          in: header
+          description: Request Identifier
+          required: true
+          schema:
+            type: string
+            example: id of request
+        - name: x-device
+          in: header
+          description: Identifier of the device.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: 9939aadd00ee32
+        - name: x-device-ip
+          in: header
+          description: IP address of origin of the request.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            example: 200.10.89.34
+        - name: x-language
+          in: header
+          description: ISO – 639-1  – Language Code - 2 digit code.
+          required: true
+          style: simple
+          explode: false
+          schema:
+            maxLength: 5
+            type: string
+            example: es
+      responses:
+        '200':
+          description: Listado de citas obtenido con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AppointmentResponse'
+        '401':
+          description: You're not authorized to perform this operation.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '403':
+          description: You don't have the right permissions to execute this operation.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: An error has occurred.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '502':
+          description: The service is not available.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    CreateAppointmentDto:
+      type: object
+      required:
+        - insuredId
+        - specialty
+        - appointmentDate
+      properties:
+        insuredId:
+          type: string
+          pattern: '^[0-9]{5}$'
+          description: Insured's identifier
+          example: "00123"
+        scheduledId:
+          type: number
+          format: '^[0-9]{3}$'
+          description: Identifier for scheduling an appointment
+          example: "100"
+        countryISO:
+          type: string
+          description: Country identifier
+          example: "PE"
+
+    AppointmentResponse:
+      type: object
+      properties:
+        appointmentId:
+          type: string
+          example: "abc12345-6789-90ab-cdef-1234567890ab"
+        insuredId:
+          type: string
+          example: "00123"
+        scheduledId:
+          type: number
+          format: '^[0-9]{3}$'
+          description: Identifier for scheduling an appointment
+          example: "100"
+        countryISO:
+          type: string
+          description: Country identifier
+          example: "PE"
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, CANCELLED, IN_PROCESS]
+          example: "IN_PROCESS"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2026-05-24T21:10:00Z"
+
+    Error:
+      type: object
+      properties:
+        errorCode:
+          maxLength: 6
+          pattern: '^[a-zA-Z]+\d+$'
+          type: string
+        developerMessage:
+          maxLength: 256
+          pattern: '^[a-zA-Z\s]*$'
+          type: string
+        userMessage:
+          maxLength: 256
+          pattern: '^[a-zA-Z\s]*$'
+          type: string
+      additionalProperties: false
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
