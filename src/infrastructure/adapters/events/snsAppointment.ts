@@ -4,7 +4,7 @@ import { IAppointmentCreatedPublisher } from 'src/domain/repositories/snsAppoint
 
 export class SnsAppointmentPublisher implements IAppointmentCreatedPublisher {
   private sns = new SNSClient({});
-  private snsTopicArn = process.env.SNS_TOPIC_ARN!;
+  private snsTopicArn = process.env.TOPIC_ARN!;
 
   async publishCreatedEvent(appointment: Appointment): Promise<void> {
     const data = appointment.toPrimitives();

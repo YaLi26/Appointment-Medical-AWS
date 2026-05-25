@@ -3,6 +3,7 @@ service: appointment-medical
 custom:
   tableName: Appointments
   topicName: medical-appointment-topic
+  eventBusName: custom-appointments
   peQueueName: sqs-medical-appointment-pe
   clQueueName: sqs-medical-appointment-cl
   confirmationQueueName: sqs-confirmation
@@ -14,7 +15,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   environment:
     TABLE_NAME: ${self:custom.tableName}
-    TOPIC_NAME: ${self:custom.topicName}
+    TOPIC_ARN: !Ref AppointmentTopic
+    EVENT_BUS_NAME: ${self:custom.eventBusName}
 
 plugins:
   - serverless-offline

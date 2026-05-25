@@ -7,7 +7,7 @@ import { IAppointmentConfirmationPublisher } from 'src/domain/repositories/event
 
 export class EventBridgeAppointmentPublisher implements IAppointmentConfirmationPublisher {
   private eventBridge = new EventBridgeClient({});
-  private eventBusName = process.env.EVENT_BUS_NAME!;
+  private eventBusName = process.env.EVENT_NAME!;
 
   async publishConfirmationEvent(appointment: Appointment): Promise<void> {
     const data = appointment.toPrimitives();

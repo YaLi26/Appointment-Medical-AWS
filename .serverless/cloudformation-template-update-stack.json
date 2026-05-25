@@ -202,10 +202,10 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779721526640-2026-05-25T15:05:26.640Z/appointment-medical.zip"
         },
         "Handler": "dist/infrastructure/adapters/lambdas/createAppointment.handler",
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "FunctionName": "appointment-medical-dev-createAppointment",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -233,10 +233,10 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779721526640-2026-05-25T15:05:26.640Z/appointment-medical.zip"
         },
         "Handler": "dist/infrastructure/adapters/lambdas/listAppointment.handler",
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "FunctionName": "appointment-medical-dev-listAppointments",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -264,10 +264,10 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779721526640-2026-05-25T15:05:26.640Z/appointment-medical.zip"
         },
         "Handler": "dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "FunctionName": "appointment-medical-dev-processAppointmentPE",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -295,10 +295,10 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779721526640-2026-05-25T15:05:26.640Z/appointment-medical.zip"
         },
         "Handler": "dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
-        "Runtime": "nodejs20.x",
+        "Runtime": "nodejs22.x",
         "FunctionName": "appointment-medical-dev-processAppointmentCO",
         "MemorySize": 1024,
         "Timeout": 6,
@@ -319,44 +319,44 @@
         "ProcessAppointmentCOLogGroup"
       ]
     },
-    "CreateAppointmentLambdaVersiono9zjHnYYdEad5PbREcHFqrvWB89ZhLupgn0ZWwLQ4o": {
+    "CreateAppointmentLambdaVersion0tIKTMZu6RqvFF72QDXk4Et3oXSvFpaCiJFK94rM4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateAppointmentLambdaFunction"
         },
-        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
+        "CodeSha256": "Cb0jd9IRhCPHQVxMpQl82P/Nuou1YLCJAqZutduFR2k="
       }
     },
-    "ListAppointmentsLambdaVersionvrjYrXXovECmAm2tpN8SUdOSWK3aTskWwzDdbN1kZtI": {
+    "ListAppointmentsLambdaVersion0q1CoV7uFZ1pl4TxscmtItIJRmJpWre5U16XdHhnY4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ListAppointmentsLambdaFunction"
         },
-        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
+        "CodeSha256": "Cb0jd9IRhCPHQVxMpQl82P/Nuou1YLCJAqZutduFR2k="
       }
     },
-    "ProcessAppointmentPELambdaVersionSlDMuHe1SCRO8Cui1LJia8mlnjJ8B3DoQf7V9T14Eg": {
+    "ProcessAppointmentPELambdaVersionaoeJHNoRYCD0Vmg4mLs71pWfkQ4kByjB6Swwox4xA": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ProcessAppointmentPELambdaFunction"
         },
-        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
+        "CodeSha256": "Cb0jd9IRhCPHQVxMpQl82P/Nuou1YLCJAqZutduFR2k="
       }
     },
-    "ProcessAppointmentCOLambdaVersionYNf5fWw6hJh3YjrQo26ASXWcuZRPFlLLN5rU9RKnw": {
+    "ProcessAppointmentCOLambdaVersionIsvFF5VNc3ZkiYBHWuPd0zj1RegvN4N4lOyhi60ck": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ProcessAppointmentCOLambdaFunction"
         },
-        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
+        "CodeSha256": "Cb0jd9IRhCPHQVxMpQl82P/Nuou1YLCJAqZutduFR2k="
       }
     },
     "ApiGatewayRestApi": {
@@ -580,7 +580,7 @@
         "ListAppointmentsLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1779720640934": {
+    "ApiGatewayDeployment1779721506334": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -843,7 +843,7 @@
     "CreateAppointmentLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateAppointmentLambdaVersiono9zjHnYYdEad5PbREcHFqrvWB89ZhLupgn0ZWwLQ4o"
+        "Ref": "CreateAppointmentLambdaVersion0tIKTMZu6RqvFF72QDXk4Et3oXSvFpaCiJFK94rM4"
       },
       "Export": {
         "Name": "sls-appointment-medical-dev-CreateAppointmentLambdaFunctionQualifiedArn"
@@ -852,7 +852,7 @@
     "ListAppointmentsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ListAppointmentsLambdaVersionvrjYrXXovECmAm2tpN8SUdOSWK3aTskWwzDdbN1kZtI"
+        "Ref": "ListAppointmentsLambdaVersion0q1CoV7uFZ1pl4TxscmtItIJRmJpWre5U16XdHhnY4"
       },
       "Export": {
         "Name": "sls-appointment-medical-dev-ListAppointmentsLambdaFunctionQualifiedArn"
@@ -861,7 +861,7 @@
     "ProcessAppointmentPELambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ProcessAppointmentPELambdaVersionSlDMuHe1SCRO8Cui1LJia8mlnjJ8B3DoQf7V9T14Eg"
+        "Ref": "ProcessAppointmentPELambdaVersionaoeJHNoRYCD0Vmg4mLs71pWfkQ4kByjB6Swwox4xA"
       },
       "Export": {
         "Name": "sls-appointment-medical-dev-ProcessAppointmentPELambdaFunctionQualifiedArn"
@@ -870,7 +870,7 @@
     "ProcessAppointmentCOLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ProcessAppointmentCOLambdaVersionYNf5fWw6hJh3YjrQo26ASXWcuZRPFlLLN5rU9RKnw"
+        "Ref": "ProcessAppointmentCOLambdaVersionIsvFF5VNc3ZkiYBHWuPd0zj1RegvN4N4lOyhi60ck"
       },
       "Export": {
         "Name": "sls-appointment-medical-dev-ProcessAppointmentCOLambdaFunctionQualifiedArn"

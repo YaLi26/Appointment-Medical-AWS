@@ -25,7 +25,7 @@ export class DynamoDbRepository implements IAppointmentRepository {
     const config: DynamoDBClientConfig = {};
     this.client = new DynamoDBClient(config);
     this.dynamo = DynamoDBDocumentClient.from(this.client);
-    this.tableName = process.env.DYNAMODB_TABLE || '';
+    this.tableName = process.env.TABLE_NAME || '';
   }
 
   async saveInDynamoDB(appointment: Appointment): Promise<void> {
