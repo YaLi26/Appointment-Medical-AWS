@@ -71,34 +71,28 @@
         }
       }
     },
-    "CreateAppointmentMedicalLogGroup": {
+    "CreateAppointmentLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/appointment-service-dev-createAppointmentMedical"
+        "LogGroupName": "/aws/lambda/appointment-medical-dev-createAppointment"
       }
     },
-    "ListAppointmentsMedicalLogGroup": {
+    "ListAppointmentsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/appointment-service-dev-listAppointmentsMedical"
+        "LogGroupName": "/aws/lambda/appointment-medical-dev-listAppointments"
       }
     },
-    "AppointmentMedicalPeLogGroup": {
+    "ProcessAppointmentPELogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/appointment-service-dev-appointmentMedicalPe"
+        "LogGroupName": "/aws/lambda/appointment-medical-dev-processAppointmentPE"
       }
     },
-    "AppointmentMedicalClLogGroup": {
+    "ProcessAppointmentCOLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/appointment-service-dev-appointmentMedicalCl"
-      }
-    },
-    "CompleteAppointmentMedicalLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/appointment-service-dev-completeAppointmentMedical"
+        "LogGroupName": "/aws/lambda/appointment-medical-dev-processAppointmentCO"
       }
     },
     "IamRoleLambdaExecution": {
@@ -126,7 +120,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "appointment-service",
+                  "appointment-medical",
                   "dev",
                   "lambda"
                 ]
@@ -144,7 +138,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/appointment-service-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/appointment-medical-dev*:*"
                     }
                   ]
                 },
@@ -155,7 +149,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/appointment-service-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/appointment-medical-dev*:*:*"
                     }
                   ]
                 },
@@ -178,12 +172,6 @@
                         "AppointmentSQSCLQueue",
                         "Arn"
                       ]
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "SQSConfirmation",
-                        "Arn"
-                      ]
                     }
                   ]
                 }
@@ -196,7 +184,7 @@
           "Fn::Join": [
             "-",
             [
-              "appointment-service",
+              "appointment-medical",
               "dev",
               {
                 "Ref": "AWS::Region"
@@ -207,20 +195,26 @@
         }
       }
     },
-    "CreateAppointmentMedicalLambdaFunction": {
+    "CreateAppointmentLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-service/dev/1779683288555-2026-05-25T04:28:08.555Z/appointment-service.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
         },
-        "Handler": "src/infrastructure/adapters/lambdas/createAppointment.ts",
+        "Handler": "dist/infrastructure/adapters/lambdas/createAppointment.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "appointment-service-dev-createAppointmentMedical",
+        "FunctionName": "appointment-medical-dev-createAppointment",
         "MemorySize": 1024,
         "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Appointments",
+            "TOPIC_NAME": "medical-appointment-topic"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -229,23 +223,29 @@
         }
       },
       "DependsOn": [
-        "CreateAppointmentMedicalLogGroup"
+        "CreateAppointmentLogGroup"
       ]
     },
-    "ListAppointmentsMedicalLambdaFunction": {
+    "ListAppointmentsLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-service/dev/1779683288555-2026-05-25T04:28:08.555Z/appointment-service.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
         },
-        "Handler": "src/infrastructure/adapters/lambdas/listAppointments.handler",
+        "Handler": "dist/infrastructure/adapters/lambdas/listAppointment.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "appointment-service-dev-listAppointmentsMedical",
+        "FunctionName": "appointment-medical-dev-listAppointments",
         "MemorySize": 1024,
         "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Appointments",
+            "TOPIC_NAME": "medical-appointment-topic"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -254,23 +254,29 @@
         }
       },
       "DependsOn": [
-        "ListAppointmentsMedicalLogGroup"
+        "ListAppointmentsLogGroup"
       ]
     },
-    "AppointmentMedicalPeLambdaFunction": {
+    "ProcessAppointmentPELambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-service/dev/1779683288555-2026-05-25T04:28:08.555Z/appointment-service.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
         },
-        "Handler": "src/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
+        "Handler": "dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "appointment-service-dev-appointmentMedicalPe",
+        "FunctionName": "appointment-medical-dev-processAppointmentPE",
         "MemorySize": 1024,
         "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Appointments",
+            "TOPIC_NAME": "medical-appointment-topic"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -279,23 +285,29 @@
         }
       },
       "DependsOn": [
-        "AppointmentMedicalPeLogGroup"
+        "ProcessAppointmentPELogGroup"
       ]
     },
-    "AppointmentMedicalClLambdaFunction": {
+    "ProcessAppointmentCOLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/appointment-service/dev/1779683288555-2026-05-25T04:28:08.555Z/appointment-service.zip"
+          "S3Key": "serverless/appointment-medical/dev/1779720659649-2026-05-25T14:50:59.649Z/appointment-medical.zip"
         },
-        "Handler": "src/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
+        "Handler": "dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "appointment-service-dev-appointmentMedicalCl",
+        "FunctionName": "appointment-medical-dev-processAppointmentCO",
         "MemorySize": 1024,
         "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "TABLE_NAME": "Appointments",
+            "TOPIC_NAME": "medical-appointment-topic"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -304,88 +316,53 @@
         }
       },
       "DependsOn": [
-        "AppointmentMedicalClLogGroup"
+        "ProcessAppointmentCOLogGroup"
       ]
     },
-    "CompleteAppointmentMedicalLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/appointment-service/dev/1779683288555-2026-05-25T04:28:08.555Z/appointment-service.zip"
-        },
-        "Handler": "src/infrastructure/handlers/finalAppointment.handler",
-        "Runtime": "nodejs20.x",
-        "FunctionName": "appointment-service-dev-completeAppointmentMedical",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "CompleteAppointmentMedicalLogGroup"
-      ]
-    },
-    "CreateAppointmentMedicalLambdaVersiont81webIEK7pp4zWcg16RK3df7Kc9S6rtBhNoBjLgzI": {
+    "CreateAppointmentLambdaVersiono9zjHnYYdEad5PbREcHFqrvWB89ZhLupgn0ZWwLQ4o": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "CreateAppointmentMedicalLambdaFunction"
+          "Ref": "CreateAppointmentLambdaFunction"
         },
-        "CodeSha256": "vbZkDM3y0Y3URY7E3gzeGoFq4QU61brDVjQ/UFXzITk="
+        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
       }
     },
-    "ListAppointmentsMedicalLambdaVersionpahnSwKOVnGJNkTootW2WBPJxiCY5Awt1gsIfFhtdI": {
+    "ListAppointmentsLambdaVersionvrjYrXXovECmAm2tpN8SUdOSWK3aTskWwzDdbN1kZtI": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "ListAppointmentsMedicalLambdaFunction"
+          "Ref": "ListAppointmentsLambdaFunction"
         },
-        "CodeSha256": "vbZkDM3y0Y3URY7E3gzeGoFq4QU61brDVjQ/UFXzITk="
+        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
       }
     },
-    "AppointmentMedicalPeLambdaVersionotVJhJS6zJhq4wnEz2721ym7w0h8iLyH2nxRGsxgI": {
+    "ProcessAppointmentPELambdaVersionSlDMuHe1SCRO8Cui1LJia8mlnjJ8B3DoQf7V9T14Eg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "AppointmentMedicalPeLambdaFunction"
+          "Ref": "ProcessAppointmentPELambdaFunction"
         },
-        "CodeSha256": "vbZkDM3y0Y3URY7E3gzeGoFq4QU61brDVjQ/UFXzITk="
+        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
       }
     },
-    "AppointmentMedicalClLambdaVersion33p9zBxQpRVxqtfxlrYxzB8t4YHWSOi6woGwU4vIk0": {
+    "ProcessAppointmentCOLambdaVersionYNf5fWw6hJh3YjrQo26ASXWcuZRPFlLLN5rU9RKnw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "AppointmentMedicalClLambdaFunction"
+          "Ref": "ProcessAppointmentCOLambdaFunction"
         },
-        "CodeSha256": "vbZkDM3y0Y3URY7E3gzeGoFq4QU61brDVjQ/UFXzITk="
-      }
-    },
-    "CompleteAppointmentMedicalLambdaVersionNPC8DGUz2tJZ9xspLUDH7EUaZndftpl6PfPHqqixts": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "CompleteAppointmentMedicalLambdaFunction"
-        },
-        "CodeSha256": "vbZkDM3y0Y3URY7E3gzeGoFq4QU61brDVjQ/UFXzITk="
+        "CodeSha256": "yAKKjoyU/J2BwqHHF/Z1m7GFb+paMQk5pOo256sjp1Q="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-appointment-service",
+        "Name": "dev-appointment-medical",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -416,6 +393,96 @@
           "Ref": "ApiGatewayResourceAppointments"
         },
         "PathPart": "{insuredId}",
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodAppointmentsOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceAppointments"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodAppointmentsInsuredidVarOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceAppointmentsInsuredidVar"
+        },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -452,7 +519,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "CreateAppointmentMedicalLambdaFunction",
+                    "CreateAppointmentLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -464,7 +531,7 @@
         "MethodResponses": []
       },
       "DependsOn": [
-        "CreateAppointmentMedicalLambdaPermissionApiGateway"
+        "CreateAppointmentLambdaPermissionApiGateway"
       ]
     },
     "ApiGatewayMethodAppointmentsInsuredidVarGet": {
@@ -498,7 +565,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "ListAppointmentsMedicalLambdaFunction",
+                    "ListAppointmentsLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -510,10 +577,10 @@
         "MethodResponses": []
       },
       "DependsOn": [
-        "ListAppointmentsMedicalLambdaPermissionApiGateway"
+        "ListAppointmentsLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1779683272257": {
+    "ApiGatewayDeployment1779720640934": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -522,16 +589,18 @@
         "StageName": "dev"
       },
       "DependsOn": [
+        "ApiGatewayMethodAppointmentsOptions",
+        "ApiGatewayMethodAppointmentsInsuredidVarOptions",
         "ApiGatewayMethodAppointmentsPost",
         "ApiGatewayMethodAppointmentsInsuredidVarGet"
       ]
     },
-    "CreateAppointmentMedicalLambdaPermissionApiGateway": {
+    "CreateAppointmentLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "CreateAppointmentMedicalLambdaFunction",
+            "CreateAppointmentLambdaFunction",
             "Arn"
           ]
         },
@@ -563,12 +632,12 @@
         }
       }
     },
-    "ListAppointmentsMedicalLambdaPermissionApiGateway": {
+    "ListAppointmentsLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "ListAppointmentsMedicalLambdaFunction",
+            "ListAppointmentsLambdaFunction",
             "Arn"
           ]
         },
@@ -600,7 +669,7 @@
         }
       }
     },
-    "AppointmentMedicalPeEventSourceMappingSQSAppointmentSQSPEQueue": {
+    "ProcessAppointmentPEEventSourceMappingSQSAppointmentSQSPEQueue": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "DependsOn": [
         "IamRoleLambdaExecution"
@@ -615,14 +684,14 @@
         },
         "FunctionName": {
           "Fn::GetAtt": [
-            "AppointmentMedicalPeLambdaFunction",
+            "ProcessAppointmentPELambdaFunction",
             "Arn"
           ]
         },
         "Enabled": true
       }
     },
-    "AppointmentMedicalClEventSourceMappingSQSAppointmentSQSCLQueue": {
+    "ProcessAppointmentCOEventSourceMappingSQSAppointmentSQSCLQueue": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "DependsOn": [
         "IamRoleLambdaExecution"
@@ -637,29 +706,7 @@
         },
         "FunctionName": {
           "Fn::GetAtt": [
-            "AppointmentMedicalClLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Enabled": true
-      }
-    },
-    "CompleteAppointmentMedicalEventSourceMappingSQSSQSConfirmation": {
-      "Type": "AWS::Lambda::EventSourceMapping",
-      "DependsOn": [
-        "IamRoleLambdaExecution"
-      ],
-      "Properties": {
-        "BatchSize": 10,
-        "EventSourceArn": {
-          "Fn::GetAtt": [
-            "SQSConfirmation",
-            "Arn"
-          ]
-        },
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "CompleteAppointmentMedicalLambdaFunction",
+            "ProcessAppointmentCOLambdaFunction",
             "Arn"
           ]
         },
@@ -670,6 +717,7 @@
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
         "TableName": "Appointments",
+        "BillingMode": "PAY_PER_REQUEST",
         "AttributeDefinitions": [
           {
             "AttributeName": "insuredId",
@@ -689,8 +737,7 @@
             "AttributeName": "appointmentId",
             "KeyType": "RANGE"
           }
-        ],
-        "BillingMode": "PAY_PER_REQUEST"
+        ]
       }
     },
     "AppointmentTopic": {
@@ -702,13 +749,19 @@
     "AppointmentSQSPEQueue": {
       "Type": "AWS::SQS::Queue",
       "Properties": {
-        "QueueName": "sqs-medical-appointment_pe"
+        "QueueName": "sqs-medical-appointment-pe"
       }
     },
     "AppointmentSQSCLQueue": {
       "Type": "AWS::SQS::Queue",
       "Properties": {
-        "QueueName": "sqs-medical-appointment_cl"
+        "QueueName": "sqs-medical-appointment-cl"
+      }
+    },
+    "SQSConfirmation": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "QueueName": "sqs-confirmation"
       }
     },
     "SNSToSQSPESubscription": {
@@ -751,16 +804,11 @@
         }
       }
     },
-    "SQSConfirmation": {
-      "Type": "AWS::SQS::Queue",
-      "Properties": {
-        "QueueName": "SQS_Confirmation"
-      }
-    },
     "EventBridgeToSQSRule": {
       "Type": "AWS::Events::Rule",
       "Properties": {
-        "Description": "Captura confirmaciones regionales y las manda a SQS",
+        "State": "ENABLED",
+        "Description": "Captura confirmaciones y envía a SQS",
         "EventPattern": {
           "source": [
             "custom.appointments"
@@ -789,52 +837,43 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-appointment-medical-dev-ServerlessDeploymentBucketName"
       }
     },
-    "CreateAppointmentMedicalLambdaFunctionQualifiedArn": {
+    "CreateAppointmentLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateAppointmentMedicalLambdaVersiont81webIEK7pp4zWcg16RK3df7Kc9S6rtBhNoBjLgzI"
+        "Ref": "CreateAppointmentLambdaVersiono9zjHnYYdEad5PbREcHFqrvWB89ZhLupgn0ZWwLQ4o"
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-CreateAppointmentMedicalLambdaFunctionQualifiedArn"
+        "Name": "sls-appointment-medical-dev-CreateAppointmentLambdaFunctionQualifiedArn"
       }
     },
-    "ListAppointmentsMedicalLambdaFunctionQualifiedArn": {
+    "ListAppointmentsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ListAppointmentsMedicalLambdaVersionpahnSwKOVnGJNkTootW2WBPJxiCY5Awt1gsIfFhtdI"
+        "Ref": "ListAppointmentsLambdaVersionvrjYrXXovECmAm2tpN8SUdOSWK3aTskWwzDdbN1kZtI"
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-ListAppointmentsMedicalLambdaFunctionQualifiedArn"
+        "Name": "sls-appointment-medical-dev-ListAppointmentsLambdaFunctionQualifiedArn"
       }
     },
-    "AppointmentMedicalPeLambdaFunctionQualifiedArn": {
+    "ProcessAppointmentPELambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppointmentMedicalPeLambdaVersionotVJhJS6zJhq4wnEz2721ym7w0h8iLyH2nxRGsxgI"
+        "Ref": "ProcessAppointmentPELambdaVersionSlDMuHe1SCRO8Cui1LJia8mlnjJ8B3DoQf7V9T14Eg"
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-AppointmentMedicalPeLambdaFunctionQualifiedArn"
+        "Name": "sls-appointment-medical-dev-ProcessAppointmentPELambdaFunctionQualifiedArn"
       }
     },
-    "AppointmentMedicalClLambdaFunctionQualifiedArn": {
+    "ProcessAppointmentCOLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppointmentMedicalClLambdaVersion33p9zBxQpRVxqtfxlrYxzB8t4YHWSOi6woGwU4vIk0"
+        "Ref": "ProcessAppointmentCOLambdaVersionYNf5fWw6hJh3YjrQo26ASXWcuZRPFlLLN5rU9RKnw"
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-AppointmentMedicalClLambdaFunctionQualifiedArn"
-      }
-    },
-    "CompleteAppointmentMedicalLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "CompleteAppointmentMedicalLambdaVersionNPC8DGUz2tJZ9xspLUDH7EUaZndftpl6PfPHqqixts"
-      },
-      "Export": {
-        "Name": "sls-appointment-service-dev-CompleteAppointmentMedicalLambdaFunctionQualifiedArn"
+        "Name": "sls-appointment-medical-dev-ProcessAppointmentCOLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -860,7 +899,7 @@
         ]
       },
       "Export": {
-        "Name": "sls-appointment-service-dev-ServiceEndpoint"
+        "Name": "sls-appointment-medical-dev-ServiceEndpoint"
       }
     }
   }

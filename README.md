@@ -10,7 +10,7 @@ Aplicación backend para el agendamiento de citas médicas de asegurados que res
  
 ### Prerrequisitos
  
-- Node.js >= 20.x
+- Node.js >= 22.x
 - AWS CLI 
 - Serverless Framework v3 
 ### 1. Clonar e instalar dependencias

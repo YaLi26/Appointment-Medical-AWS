@@ -9,10 +9,9 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs20.x
+  runtime: nodejs22.x
   region: us-east-1
   stage: ${opt:stage, 'dev'}
-
   environment:
     TABLE_NAME: ${self:custom.tableName}
     TOPIC_NAME: ${self:custom.topicName}
@@ -22,9 +21,8 @@ plugins:
   - serverless-jetpack
 
 functions:
-
   createAppointment:
-    handler: dist/infrastructure/lambdas/create-appointment.handler
+    handler: dist/infrastructure/adapters/lambdas/createAppointment.handler
     events:
       - http:
           path: appointments
@@ -32,7 +30,7 @@ functions:
           cors: true
 
   listAppointments:
-    handler: dist/infrastructure/lambdas/list-appointments.handler
+    handler: dist/infrastructure/adapters/lambdas/listAppointment.handler
     events:
       - http:
           path: appointments/{insuredId}
@@ -40,13 +38,13 @@ functions:
           cors: true
 
   processAppointmentPE:
-    handler: dist/infrastructure/lambdas/process-appointment-pe.handler
+    handler: dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler
     events:
       - sqs:
           arn: !GetAtt AppointmentSQSPEQueue.Arn
 
   processAppointmentCO:
-    handler: dist/infrastructure/lambdas/process-appointment-co.handler
+    handler: dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler
     events:
       - sqs:
           arn: !GetAtt AppointmentSQSCLQueue.Arn
