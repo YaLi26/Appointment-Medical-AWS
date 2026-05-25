@@ -3,21 +3,21 @@
 Aplicación backend para el agendamiento de citas médicas de asegurados que residen en Perú como en Colombia.
 
 ## Diseño de Arquitecura Cloud
-<img width="1209" height="718" alt="image" src="https://github.com/user-attachments/assets/916084a2-7a17-4fe9-b899-5609de18fb93" />
 
+![alt text](image.png)
  
 ## Instalación y Despliegue
  
 ### Prerrequisitos
  
 - Node.js >= 20.x
-- NestJS
 - AWS CLI 
+- Serverless Framework v3 
 ### 1. Clonar e instalar dependencias
  
 ```bash
-git clone https://github.com/YaLi26/Appointment-Medical-AWS.git
-cd appointment-medical-aws
+git clone https://github.com/tu-org/medical-appointment-backend.git
+cd medical-appointment-backend
 npm install
 ```
  
@@ -31,4 +31,24 @@ npm run build
  
 ```bash
 npm test
-``
+```
+ 
+### 4. Configurar credenciales AWS
+ 
+```bash
+aws configure
+```
+ 
+ ### 5. Desplegar el proyecto
+ 
+```bash
+npx sls deploy
+
+en caso de eliminar:
+
+npx sls remove
+```
+
+
+
+

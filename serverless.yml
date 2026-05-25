@@ -1,0 +1,124 @@
+service: appointment-medical
+
+custom:
+  tableName: Appointments
+  topicName: medical-appointment-topic
+  peQueueName: sqs-medical-appointment-pe
+  clQueueName: sqs-medical-appointment-cl
+  confirmationQueueName: sqs-confirmation
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+
+  environment:
+    TABLE_NAME: ${self:custom.tableName}
+    TOPIC_NAME: ${self:custom.topicName}
+
+plugins:
+  - serverless-offline
+  - serverless-jetpack
+
+functions:
+
+  createAppointment:
+    handler: dist/infrastructure/lambdas/create-appointment.handler
+    events:
+      - http:
+          path: appointments
+          method: post
+          cors: true
+
+  listAppointments:
+    handler: dist/infrastructure/lambdas/list-appointments.handler
+    events:
+      - http:
+          path: appointments/{insuredId}
+          method: get
+          cors: true
+
+  processAppointmentPE:
+    handler: dist/infrastructure/lambdas/process-appointment-pe.handler
+    events:
+      - sqs:
+          arn: !GetAtt AppointmentSQSPEQueue.Arn
+
+  processAppointmentCO:
+    handler: dist/infrastructure/lambdas/process-appointment-co.handler
+    events:
+      - sqs:
+          arn: !GetAtt AppointmentSQSCLQueue.Arn
+
+resources:
+  Resources:
+    AppointmentsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: insuredId
+            AttributeType: S
+          - AttributeName: appointmentId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: insuredId
+            KeyType: HASH
+          - AttributeName: appointmentId
+            KeyType: RANGE
+
+    AppointmentTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ${self:custom.topicName}
+
+    AppointmentSQSPEQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.peQueueName}
+
+    AppointmentSQSCLQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.clQueueName}
+
+    SQSConfirmation:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:custom.confirmationQueueName}
+
+    SNSToSQSPESubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref AppointmentTopic
+        Endpoint: !GetAtt AppointmentSQSPEQueue.Arn
+        Protocol: sqs
+        FilterPolicy:
+          countryISO:
+            - PE
+
+    SNSToSQSCLSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: !Ref AppointmentTopic
+        Endpoint: !GetAtt AppointmentSQSCLQueue.Arn
+        Protocol: sqs
+        FilterPolicy:
+          countryISO:
+            - CL
+
+    EventBridgeToSQSRule:
+      Type: AWS::Events::Rule
+      Properties:
+        State: ENABLED
+        Description: 'Captura confirmaciones y envía a SQS'
+        EventPattern:
+          source:
+            - custom.appointments
+          detail-type:
+            - AppointmentConfirmed
+        Targets:
+          - Arn: !GetAtt SQSConfirmation.Arn
+            Id: SQSConfirmationTarget
