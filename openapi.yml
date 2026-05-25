@@ -5,7 +5,7 @@ info:
     Api Appointment Medical in AWS <br>
   contact:
     name: Yasmin Dominguez
-    email: ydominguez-ext@pichincha.pe
+    email: ydominguez@gmail.com
   version: 1.2.4
 servers:
   - url: http://localhost:3000/api
