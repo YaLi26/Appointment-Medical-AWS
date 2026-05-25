@@ -18,6 +18,38 @@ provider:
     TOPIC_ARN: !Ref AppointmentTopic
     EVENT_BUS_NAME: ${self:custom.eventBusName}
 
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:Query
+          Resource:
+            - !GetAtt AppointmentsTable.Arn
+        #Permisos para publicar en SNS
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource:
+            - !Ref AppointmentTopic
+        #Permisos para enviar messages en SQS
+        - Effect: Allow
+          Action:
+            - sqs:SendMessage
+            - sqs:ReceiveMessage
+            - sqs:GetQueueAttributes
+          Resource:
+            - !GetAtt AppointmentSQSPEQueue.Arn
+            - !GetAtt AppointmentSQSCLQueue.Arn
+            - !GetAtt SQSConfirmation.Arn
+        # Permisos para EventBridge
+        - Effect: Allow
+          Action:
+            - events:PutEvents
+          Resource: "*"
+
 plugins:
   - serverless-offline
   - serverless-jetpack
