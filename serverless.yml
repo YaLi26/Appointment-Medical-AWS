@@ -13,6 +13,11 @@ provider:
   runtime: nodejs22.x
   region: us-east-1
   stage: ${opt:stage, 'dev'}
+
+  apiGateway:
+    apiKeys:
+      - name: medical-appointment-key-${self:provider.stage}
+
   environment:
     TABLE_NAME: ${self:custom.tableName}
     TOPIC_ARN: !Ref AppointmentTopic
@@ -48,7 +53,7 @@ provider:
         - Effect: Allow
           Action:
             - events:PutEvents
-          Resource: "*"
+          Resource: '*'
 
 plugins:
   - serverless-offline
@@ -62,6 +67,7 @@ functions:
           path: appointments
           method: post
           cors: true
+          private: true
 
   listAppointments:
     handler: dist/infrastructure/adapters/lambdas/listAppointment.handler
@@ -70,6 +76,7 @@ functions:
           path: appointments/{insuredId}
           method: get
           cors: true
+          private: true
 
   processAppointmentPE:
     handler: dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler
@@ -77,11 +84,17 @@ functions:
       - sqs:
           arn: !GetAtt AppointmentSQSPEQueue.Arn
 
-  processAppointmentCO:
+  processAppointmentCL:
     handler: dist/infrastructure/adapters/lambdas/appointmentCL-PE.handler
     events:
       - sqs:
           arn: !GetAtt AppointmentSQSCLQueue.Arn
+
+  processAppointmentFinal:
+    handler: dist/infrastructure/adapters/lambdas/finalAppointment.handler
+    events:
+      - sqs:
+          arn: !GetAtt SQSConfirmation.Arn
 
 resources:
   Resources:
@@ -121,6 +134,57 @@ resources:
       Properties:
         QueueName: ${self:custom.confirmationQueueName}
 
+    AppointmentSQSPEQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queues:
+          - !Ref AppointmentSQSPEQueue
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: 'sns.amazonaws.com'
+              Action: 'sqs:SendMessage'
+              Resource: !GetAtt AppointmentSQSPEQueue.Arn
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !Ref AppointmentTopic
+
+    AppointmentSQSCLQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queues:
+          - !Ref AppointmentSQSCLQueue
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: 'sns.amazonaws.com'
+              Action: 'sqs:SendMessage'
+              Resource: !GetAtt AppointmentSQSCLQueue.Arn
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !Ref AppointmentTopic
+
+    AppointmentSQSConfirmartionQueuePolicy:
+      Type: AWS::SQS::QueuePolicy
+      Properties:
+        Queues:
+          - !Ref SQSConfirmation
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: 'sns.amazonaws.com'
+              Action: 'sqs:SendMessage'
+              Resource: !GetAtt SQSConfirmation.Arn
+              Condition:
+                ArnEquals:
+                  aws:SourceArn: !Ref AppointmentTopic
+
     SNSToSQSPESubscription:
       Type: AWS::SNS::Subscription
       Properties:
@@ -140,6 +204,13 @@ resources:
         FilterPolicy:
           countryISO:
             - CL
+
+    SNSToSQSConfirmationSubscription:
+          Type: AWS::SNS::Subscription
+          Properties:
+            TopicArn: !Ref AppointmentTopic
+            Endpoint: !GetAtt SQSConfirmation.Arn
+            Protocol: sqs
 
     EventBridgeToSQSRule:
       Type: AWS::Events::Rule
