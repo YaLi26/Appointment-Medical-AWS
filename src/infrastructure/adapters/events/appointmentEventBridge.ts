@@ -2,8 +2,8 @@ import {
   EventBridgeClient,
   PutEventsCommand,
 } from '@aws-sdk/client-eventbridge';
+import { IAppointmentConfirmationPublisher } from 'src/domain/ports/eventBridgeAppointment.publisher';
 import { Appointment } from 'src/domain/models/appointment';
-import { IAppointmentConfirmationPublisher } from 'src/domain/repositories/eventBridgeAppointment.publisher';
 
 export class EventBridgeAppointmentPublisher implements IAppointmentConfirmationPublisher {
   private eventBridge = new EventBridgeClient({});
@@ -11,17 +11,25 @@ export class EventBridgeAppointmentPublisher implements IAppointmentConfirmation
 
   async publishConfirmationEvent(appointment: Appointment): Promise<void> {
     const data = appointment.toPrimitives();
-    await this.eventBridge.send(
-      new PutEventsCommand({
-        Entries: [
-          {
-            Source: `appointment.${data.countryISO.toLowerCase()}`,
-            DetailType: 'AppointmentConfirmed',
-            Detail: JSON.stringify(data),
-            EventBusName: this.eventBusName,
-          },
-        ],
-      }),
-    );
+
+    try {
+      const result = await this.eventBridge.send(
+        new PutEventsCommand({
+          Entries: [
+            {
+              Source: `appointment.${data.countryISO.toLowerCase()}`,
+              DetailType: 'AppointmentConfirmed',
+              Detail: JSON.stringify(data),
+              EventBusName: this.eventBusName,
+            },
+          ],
+        }),
+      );
+
+      console.log(`Evento publicado en EventBridge:`, result.Entries);
+    } catch (error: any) {
+      console.error(`Error al publicar en EventBridge:`, error.message);
+      throw error;
+    }
   }
 }
