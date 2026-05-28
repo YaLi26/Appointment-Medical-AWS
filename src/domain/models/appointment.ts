@@ -2,17 +2,7 @@ import { randomUUID } from 'crypto';
 import { InsuredId } from '../value-objects/insured-id.vo';
 import { ScheduleId } from '../value-objects/schedule-id.vo';
 import { CountryISO } from '../value-objects/country-iso.vo';
-
-export type AppointmentStatus = 'pending' | 'completed';
-
-export interface AppointmentProps {
-  appointmentId: string;
-  insuredId: string;
-  scheduleId: number;
-  countryISO: 'PE' | 'CL';
-  status: AppointmentStatus;
-  createdAt: Date;
-}
+import { AppointmentProps, AppointmentStatus } from './appointment.types';
 
 export class Appointment {
   constructor(private props: AppointmentProps) {}
@@ -34,6 +24,13 @@ export class Appointment {
       status: 'pending',
       createdAt: new Date(),
     });
+  }
+
+  public complete(): void {
+    if (this.props.status === 'completed') {
+      throw new Error ('El appointment ya fue completado.');
+    }
+    this.props.status = 'completed' as AppointmentStatus;
   }
 
   get id() {
