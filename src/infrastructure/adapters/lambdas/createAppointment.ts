@@ -15,7 +15,7 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     console.log(`Cita creada con éxito:`, result);
     
     return {
-      statusCode: 202,
+      statusCode: 201,
       body: JSON.stringify(result),
     };
   } catch (error: any) {
