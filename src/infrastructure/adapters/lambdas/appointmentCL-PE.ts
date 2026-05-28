@@ -24,10 +24,6 @@ export const handler = async (event: SQSEvent): Promise<void> => {
         scheduleId: appointmentData.scheduleId,
         countryISO: appointmentData.countryISO,
       });
-
-      console.log(
-        `Cita guardada en MySQL para el asegurado: ${appointmentData.insuredId}`,
-      );
     }
   } catch (error: any) {
     console.log('Error:', error.message);

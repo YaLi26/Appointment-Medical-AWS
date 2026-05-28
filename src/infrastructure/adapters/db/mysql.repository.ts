@@ -8,7 +8,7 @@ export class MysqlAppointmentRepository implements IMysqlAppointmentRepository {
     countryISO: string;
   }): Promise<void> {
     console.log(
-      `Appointment saves ('${data.appointmentId}', '${data.insuredId}', ${data.scheduleId})`,
+      `Appointment saves in MySQL ('${data.appointmentId}', '${data.insuredId}', ${data.scheduleId})`,
     );
     return Promise.resolve();
   }
