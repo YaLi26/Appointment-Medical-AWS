@@ -3,7 +3,7 @@ import { CompleteAppointmentUseCase } from './complete-appointment.use-case';
 
 describe('CompleteAppointmentUseCase', () => {
   const mockRepository: jest.Mocked<IAppointmentRepository> = {
-    saveInDynamoDB: jest.fn(),
+    save: jest.fn(),
     updateStatus: jest.fn().mockResolvedValue(undefined),
     findByInsuredId: jest.fn(),
   };

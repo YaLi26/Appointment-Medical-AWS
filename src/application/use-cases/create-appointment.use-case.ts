@@ -1,4 +1,4 @@
-import { IAppointmentCreatedPublisher } from 'src/domain/repositories/snsAppointment.publisher';
+import { IAppointmentCreatedPublisher } from 'src/domain/ports/snsAppointment.publisher';
 import { Appointment } from '../../domain/models/appointment';
 import { IAppointmentRepository } from '../../domain/repositories/appointment.repository';
 import { AppointmentMedicalDto } from '../dto/AppointmentMedicalDto';
@@ -12,7 +12,7 @@ export class CreateAppointmentUseCase {
   async execute(dto: AppointmentMedicalDto) {
     const appointment = Appointment.create(dto);
 
-    await this.repository.saveInDynamoDB(appointment);
+    await this.repository.save(appointment);
     await this.eventPublisher.publishCreatedEvent(appointment);
 
     return {

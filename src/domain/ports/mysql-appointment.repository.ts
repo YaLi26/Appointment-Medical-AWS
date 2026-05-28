@@ -1,5 +1,5 @@
 export interface IMysqlAppointmentRepository {
-  saveInMysqlDb(data: {
+  save(data: {
     appointmentId: string;
     insuredId: string;
     scheduleId: number;

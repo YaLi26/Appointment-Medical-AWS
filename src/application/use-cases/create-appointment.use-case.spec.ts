@@ -1,7 +1,7 @@
 import { CreateAppointmentUseCase } from './create-appointment.use-case';
 import { Appointment } from '../../domain/models/appointment';
 import { IAppointmentRepository } from '../../domain/repositories/appointment.repository';
-import { IAppointmentCreatedPublisher } from 'src/domain/repositories/snsAppointment.publisher';
+import { IAppointmentCreatedPublisher } from 'src/domain/ports/snsAppointment.publisher';
 import { AppointmentMedicalDto } from '../dto/AppointmentMedicalDto';
 
 jest.mock('../../domain/models/appointment', () => ({
@@ -20,7 +20,7 @@ describe('CreateAppointmentUseCase', () => {
   };
 
   const repository: jest.Mocked<IAppointmentRepository> = {
-    saveInDynamoDB: jest.fn().mockResolvedValue(undefined),
+    save: jest.fn().mockResolvedValue(undefined),
     updateStatus: jest.fn(),
     findByInsuredId: jest.fn(),
   };
@@ -46,14 +46,14 @@ describe('CreateAppointmentUseCase', () => {
 
   it('debe llamar save y publishCreatedEvent con el appointment', async () => {
     await useCase.execute(mockDto);
-    const { saveInDynamoDB } = repository;
+    const { save } = repository;
     const { publishCreatedEvent } = eventPublisher;
-    expect(saveInDynamoDB).toHaveBeenCalledWith(mockAppointment);
+    expect(save).toHaveBeenCalledWith(mockAppointment);
     expect(publishCreatedEvent).toHaveBeenCalledWith(mockAppointment);
   });
 
   it('debe lanzar error y no publicar si save() falla', async () => {
-    repository.saveInDynamoDB.mockRejectedValueOnce(new Error('DB error'));
+    repository.save.mockRejectedValueOnce(new Error('DB error'));
     await expect(() => useCase.execute(mockDto)).rejects.toThrow('DB error');
     expect(eventPublisher.publishCreatedEvent).not.toHaveBeenCalled();
   });

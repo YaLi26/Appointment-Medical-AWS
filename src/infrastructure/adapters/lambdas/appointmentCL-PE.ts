@@ -1,11 +1,11 @@
 import { SQSEvent } from 'aws-lambda';
 import { MysqlAppointmentRepository } from '../db/mysql.repository';
 import { EventBridgeAppointmentPublisher } from '../events/appointmentEventBridge';
-import { saveInMysqlDbAppointmentUseCase } from 'src/application/use-cases/save-db-appointment.use-case';
+import { saveAppointmentUseCase } from 'src/application/use-cases/save-db-appointment.use-case';
 
 const mysqlRepository = new MysqlAppointmentRepository();
 const eventPublisher = new EventBridgeAppointmentPublisher();
-const useCase = new saveInMysqlDbAppointmentUseCase(
+const useCase = new saveAppointmentUseCase(
   mysqlRepository,
   eventPublisher,
 );

@@ -22,7 +22,7 @@ export class SnsAppointmentPublisher implements IAppointmentCreatedPublisher {
           },
         }),
       );
-      console.log(`Evento publicado en SNS: ${result}`);
+      console.log('Evento publicado en SNS:', result);
     } catch (error: any) {
       console.error(`Error al publicar en SNS:`, error.message);
       throw error;

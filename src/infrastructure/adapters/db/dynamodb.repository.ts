@@ -13,7 +13,8 @@ import {
   UpdateCommandInput,
   QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
-import { Appointment, AppointmentStatus } from 'src/domain/models/appointment';
+import { Appointment } from 'src/domain/models/appointment';
+import { AppointmentStatus } from 'src/domain/models/appointment.types';
 import { IAppointmentRepository } from 'src/domain/repositories/appointment.repository';
 
 export class DynamoDbRepository implements IAppointmentRepository {
@@ -28,7 +29,7 @@ export class DynamoDbRepository implements IAppointmentRepository {
     this.tableName = process.env.TABLE_NAME || '';
   }
 
-  async saveInDynamoDB(appointment: Appointment): Promise<void> {
+  async save(appointment: Appointment): Promise<void> {
     const input: PutCommandInput = {
       TableName: this.tableName,
       Item: appointment.toPrimitives(),

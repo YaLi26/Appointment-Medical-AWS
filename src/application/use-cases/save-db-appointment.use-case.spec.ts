@@ -1,9 +1,9 @@
-import { IMysqlAppointmentRepository } from '../../domain/repositories/mysql-appointment.repository';
-import { IAppointmentConfirmationPublisher } from 'src/domain/repositories/eventBridgeAppointment.publisher';
+import { IMysqlAppointmentRepository } from '../../domain/ports/mysql-appointment.repository';
+import { IAppointmentConfirmationPublisher } from 'src/domain/ports/eventBridgeAppointment.publisher';
 import { Appointment } from '../../domain/models/appointment';
-import { saveInMysqlDbAppointmentUseCase } from './save-db-appointment.use-case';
+import { saveAppointmentUseCase } from './save-db-appointment.use-case';
 
-describe('saveInMysqlDbAppointmentUseCase', () => {
+describe('saveAppointmentUseCase', () => {
   const dto = {
     insuredId: '98765',
     scheduleId: 102,
@@ -11,7 +11,7 @@ describe('saveInMysqlDbAppointmentUseCase', () => {
   };
 
   const mockMysqlRepository = {
-    saveInMysqlDb: jest.fn().mockImplementation(() => Promise.resolve()),
+    save: jest.fn().mockImplementation(() => Promise.resolve()),
   } as unknown as jest.Mocked<IMysqlAppointmentRepository>;
 
   const mockEventPublisher = {
@@ -25,7 +25,7 @@ describe('saveInMysqlDbAppointmentUseCase', () => {
   });
 
   it('debe guardar la cita médica en la bbdd MySQL, publicar el evento de confirmación en EventBridge y retornar éxito', async () => {
-    const useCase = new saveInMysqlDbAppointmentUseCase(
+    const useCase = new saveAppointmentUseCase(
       mockMysqlRepository,
       mockEventPublisher,
     );
@@ -35,8 +35,8 @@ describe('saveInMysqlDbAppointmentUseCase', () => {
     expect(result).toHaveProperty('appointmentId');
     expect(result.message).toBe('Procesado correctamente');
 
-    expect(mockMysqlRepository.saveInMysqlDb).toHaveBeenCalledTimes(1);
-    expect(mockMysqlRepository.saveInMysqlDb).toHaveBeenCalledWith({
+    expect(mockMysqlRepository.save).toHaveBeenCalledTimes(1);
+    expect(mockMysqlRepository.save).toHaveBeenCalledWith({
       appointmentId: expect.any(String),
       insuredId: dto.insuredId,
       scheduleId: dto.scheduleId,
@@ -52,11 +52,11 @@ describe('saveInMysqlDbAppointmentUseCase', () => {
   });
 
   it('debe lanzar un error si la inserción en la base de datos MySQL falla', async () => {
-    mockMysqlRepository.saveInMysqlDb.mockImplementationOnce(() =>
+    mockMysqlRepository.save.mockImplementationOnce(() =>
       Promise.reject(new Error('MySQL Connection Timeout')),
     );
 
-    const useCase = new saveInMysqlDbAppointmentUseCase(
+    const useCase = new saveAppointmentUseCase(
       mockMysqlRepository,
       mockEventPublisher,
     );

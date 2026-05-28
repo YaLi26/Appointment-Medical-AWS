@@ -1,7 +1,7 @@
-import { IMysqlAppointmentRepository } from 'src/domain/repositories/mysql-appointment.repository';
+import { IMysqlAppointmentRepository } from 'src/domain/ports/mysql-appointment.repository';
 
 export class MysqlAppointmentRepository implements IMysqlAppointmentRepository {
-  async saveInMysqlDb(data: {
+  async save(data: {
     appointmentId: string;
     insuredId: string;
     scheduleId: number;
